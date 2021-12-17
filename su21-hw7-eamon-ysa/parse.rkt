@@ -1,0 +1,200 @@
+#lang racket
+
+; ysabella atehortua and eamon mckeon
+
+(provide (all-defined-out))
+
+(define (parse input)
+  (define (parse-error)
+    (error 'parse "Invalid syntax ~s" input))
+  (cond [(number? input) (lit-exp input)]
+        [(symbol? input) (var-exp input)]
+        [(list? input)
+         (cond [(empty? input) (parse-error)]
+               [(eq? (first input) 'if)
+                (if (= (length input) 4)
+                    (ite-exp
+                     (parse (second input))
+                     (parse (third input))
+                     (parse (fourth input)))
+                    (parse-error))]
+               [(eq? (first input) 'let)
+                (if (= (length input) 3)
+                    (let-exp
+                     (map first (second input))
+                     (map (λ (bind) (parse (second bind)))
+                          (second input))
+                     (parse (third input)))
+                    (parse-error))]
+               [(eq? (first input) 'lambda)
+                (if (= (length input) 3)
+                    (lambda-exp (second input)
+                     (parse (third input)))
+                    (parse-error))]
+               [(eq? (first input) 'set!)
+                (if (= (length input) 3)
+                    (set-exp (second input)
+                             (parse (third input)))
+                    (parse-error))]
+               [(eq? (first input) 'begin)
+                (begin-exp (map parse (rest input)))]
+               [(eq? (first input) 'letrec)
+                    (parse-letrec input)
+                    (parse-error)]
+               [else (app-exp (parse (first input)) (map parse (rest input)))])]
+        [else (parse-error)]))
+
+; Part A
+
+(define (lit-exp input)
+  (list 'lit-exp input))
+
+(define (lit-exp-num tree)
+  (second tree))
+
+(define (lit-exp? tree)
+  (if (equal? (first tree) 'lit-exp)
+      #t
+      #f))
+
+; Part B
+
+(define (var-exp input)
+  (list 'var-exp input))
+
+(define (var-exp-symbol tree)
+  (second tree))
+
+(define (var-exp? tree)
+  (if (equal? (first tree) 'var-exp)
+      #t
+      #f))
+
+; Part C
+
+(define (app-exp proc args)
+  (list 'app-exp proc args))
+
+(define (app-exp? exp)
+  (if (equal? (first exp) 'app-exp)
+      #t
+      #f))
+
+(define (app-exp-proc exp)
+  (second exp))
+
+(define (app-exp-args exp)
+  (third exp))
+
+; Part D
+
+(define (ite-exp if then else)
+  (list 'ite-exp if then else))
+
+(define (ite-exp? tree)
+  (if (equal? (first tree) 'ite-exp)
+      #t
+      #f))
+
+(define ite-exp-if
+  (lambda (x)
+    (second x)))
+
+(define ite-exp-then
+  (lambda (x)
+    (third x)))
+
+(define ite-exp-else
+  (lambda (x)
+    (fourth x)))
+
+; Part E
+
+(define (let-exp symbols tree body)
+  (list 'let-exp symbols tree body))
+
+(define (let-exp? exp)
+  (if (equal? 'let-exp (first exp))
+      #t
+      #f))
+
+(define (let-exp-symbols exp)
+      (second exp))
+
+(define (let-exp-tree exp)
+      (third exp))
+
+(define (let-exp-body exp)
+      (fourth exp))
+
+; Part F
+
+(define (lambda-exp params body)
+  (list 'lambda-exp params body))
+
+(define (lambda-exp? exp)
+  (if (equal? 'lambda-exp (first exp))
+      #t
+      #f))
+
+(define (lambda-exp-params exp)
+  (second exp))
+
+(define (lambda-exp-body exp)
+  (third exp))
+
+; Part G
+
+(define (set-exp symbol exp)
+  (list 'set-exp symbol exp))
+
+(define (set-exp? exp)
+  (if (list? exp)
+      (if (equal? 'set-exp (first exp))
+          #t
+          #f)
+      #f))
+
+(define (set-exp-sym exp)
+  (if (set-exp? exp)
+      (second exp)
+      (error "~s is not a set-exp" exp)))
+
+(define (set-exp-val exp)
+  (if (set-exp? exp)
+      (third exp)
+      (error "~s is not a set-exp" exp)))
+
+; Begin
+
+(define (begin-exp exp)
+  (list 'begin-exp exp))
+
+(define (begin-exp? exp)
+  (if (list? exp)
+      (if (equal? 'begin-exp (first exp))
+          #t
+          #f)
+      #f))
+
+(define (begin-exp-lst exp)
+  (if (begin-exp? exp)
+      (second exp)
+      (error "~s is not a begin-exp" exp)))
+
+; Part H
+(define (parse-letrec input)
+  (let* ([syms (map first (second input))]
+         [exps (map second (second input))]
+         [body (third input)]
+         [new-syms (map (λ (x) (gensym)) syms)])
+    (let-exp syms
+             (map (λ (x) (lit-exp 0)) syms)
+             (let-exp new-syms
+                      (map parse exps)
+                      (begin-exp
+                        (append (map
+                                 (λ (x new-x)
+                                   (set-exp x (var-exp new-x)))
+                                 syms new-syms)
+                                (list (parse body))))))))

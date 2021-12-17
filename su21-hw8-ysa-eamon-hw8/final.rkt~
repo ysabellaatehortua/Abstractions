@@ -1,0 +1,76 @@
+#lang racket
+(require racket/stream)
+
+; Exam 3, question 1. (50 points)
+;
+; You may not discuss this exam with anyone other than Prof. Checkoway.
+; You may refer to the lecture videos, lecture slides, readings, your
+; notes, or the Racket standard library reference:
+; https://docs.racket-lang.org/reference/pairs.html
+; https://docs.racket-lang.org/reference/streams.html
+;
+; You may wish to look up stream* in the streams reference; it works like
+; stream except that the last argument must be a stream.
+; (stream* 1 2 3 (stream 4 5 6)) produces the stream (stream 1 2 3 4 5 6).
+; This can be used with letrec to make infinite-length streams easily as
+; in the third example in question A.
+
+; A. 20 points
+; Write a procedure (every-n n s) that takes a positive integer n and a
+; stream s and returns a stream that contains every nth element of s,
+; starting with the first.
+;
+; Examples
+;   (every-n 1 (stream 1 2 3))  =>  (stream 1 2 3)
+;   (every-n 3 (stream 'x 'y 'z 'x 'y 'z 'x 'y))  =>  (stream 'x 'x 'x)
+;   (letrec ([s (stream* 1 2 3 4 5 6 7 8 9 10 s)])
+;     (every-n 3 s))  =>  (stream 1 4 7 10 3 6 9 2 5 8 ...)
+
+(define (every-n n s)
+  (if (equal? n 0)
+      null
+      (letrec (force (lambda (step stream)
+                       (letrec([x (car (stream))])
+                         (if (= step n)
+                             (cons value null)
+                             (cons value (force (+ step 1)
+                                                (stream-rest (stream))))))
+                       (force 1 s))))))
+
+
+
+; B. 10 points
+; Write a procedure (has-at-least n s) that returns #t if stream s has at least
+; n elements and #f if it has fewer than n.
+
+
+
+
+
+; C. 20 points
+; Write a continuation-passing style procedure (remove-sym-k sym lst k err-k)
+; that takes a symbol sym, a list lst, a continuation k, and an error
+; continuation err-k and removes every instance of sym from lst. If any
+; element of lst is not a symbol, return the result of calling err-k on that
+; element.
+;
+; You can use the predicate (symbol? x) which returns #t if x is a symbol
+; and you can compare symbols using (eq? x y) which returns #t if x and y
+; are the same symbol.
+;
+; I highly recommend you refer to the lecture slides for CPS to make sure
+; that you understand the requirements for a CPS procedure.
+;
+; Examples
+;   (remove-sym-k 'x '(a b x c x x d) reverse (λ (x) #f))
+;     =>  '(d c b a)
+;   (remove-sym-k 'x '(a x 5 x d) identity (λ (x) #f))  =>  #f
+;   (remove-sym-k 'x '(a x 5 x d) identity (λ (x) (error "Not a symbol:" x)))
+;     =>  prints the error "Not a symbol: 5"
+
+
+
+
+; Please write Oberlin's Honor Pledge and write your name below.
+; Honor Pledge:
+; Name: 

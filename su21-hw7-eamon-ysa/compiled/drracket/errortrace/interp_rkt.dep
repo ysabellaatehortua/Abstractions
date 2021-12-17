@@ -1,0 +1,1 @@
+("8.1" ta6osx ("853913e39b2790ebe51514c4e2c9ef7b10a131ef" . "95a4d6a5983050cec8e339937b3f2a3b44ce79c2") #"/Users/ysabellaatehortua/Documents/GitHub/su21-hw7-eamon-ysa/env.rkt" #"/Users/ysabellaatehortua/Documents/GitHub/su21-hw7-eamon-ysa/parse.rkt" (collects #"errortrace" #"errortrace-key.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))
