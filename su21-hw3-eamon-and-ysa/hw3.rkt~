@@ -1,0 +1,75 @@
+#lang racket
+
+; Eamon McKeon and Ysa Atehortua
+
+; Export all of our top-level definitions so that tests.rkt
+; can import them. See tests.rkt.
+
+(provide (all-defined-out))
+
+; PART 1
+
+; firsts and rests
+
+(define (firsts lsts)
+  (map first lsts))
+
+(define (rests lsts)
+  (map rest lsts))
+
+; vec-+
+
+(define (vec-+ vec1 vec2)
+  (map + vec1 vec2))
+
+; dot-product
+
+(define (dot-product vec1 vec2)
+  (apply + (map * vec1 vec2)))
+
+; mat-vec-*
+
+(define (mat-vec-* mat vec)
+  (cond [(empty? mat) empty]
+        [else (cons (dot-product (first mat) vec) (mat-vec-* (rest mat) vec))]))
+
+; transpose
+
+(define (transpose mat)
+  (cond [(empty? (first mat)) empty]
+        [else (cons (firsts mat) (transpose (rests mat)))]))
+
+; mat-mat-* (NOT WORKING)
+
+(define (transpose-product lhs rhs)
+  (cond [(or (empty? lhs) (empty? rhs)) empty]
+        [else (cons (dot-product (first lhs) (first (transpose rhs)))
+                    (transpose-product (rest lhs) (rests rhs)))]))
+
+(define (mat-mat-* lhs rhs)
+  (map (transpose-product lhs rhs)))
+
+
+; PART 2
+
+; flatten (not working)
+
+;(define (flatten lst)
+ ; (cond [(empty? lst) lst]
+
+;(flatten '(x y z z y))
+
+; sum
+
+(define (sum lst)
+  (cond [(number? lst) lst]
+        [else (apply + (map sum lst))]))
+
+; map-to
+
+(define (map-to f lst)
+  (cond [(empty? lst) empty]
+        [(list? (first lst)) (cons (f (first (first lst))) (map-to f (rest (first lst))))]
+        [else (cons (f (first lst)) (map-to f (rest lst)))]))
+
+(map-to add1 '(5 (6 7)))

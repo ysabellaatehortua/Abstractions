@@ -1,0 +1,28 @@
+#lang racket
+; Your name(s) here
+
+(require rackunit rackunit/text-ui rackunit/gui)
+(require "hw1.rkt")
+
+; Define tests for atom?.
+(define atom?-tests
+  (test-suite
+   "atom?"
+   (test-true "3 is an atom"
+              (atom? 3))
+   (test-false "Lists are not atoms"
+               (atom? '(1 2)))
+   (test-false "Pairs are not atoms"
+               (atom? (cons 1 2)))))
+
+
+; Define tests for list-of-atom?.
+; (define list-of-atom?-tests ...)
+
+; Define an All Tests test suite.
+(define all-tests
+  (test-suite
+   "All tests"
+   atom?-tests))
+
+(run-tests all-tests)

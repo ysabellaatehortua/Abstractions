@@ -1,0 +1,114 @@
+#lang racket
+; Your name(s) here
+
+(require rackunit rackunit/text-ui rackunit/gui)
+(require "hw4.rkt")
+(require "TreeDatatype.rkt")
+
+
+; Define tests for index
+(define index-tests
+  (test-suite
+   "index"
+   (test-equal? "hw example 1"
+                (index 3 '(2 4 3 1 2 3))
+                2)
+   (test-equal? "hw example 2"
+                (index 3 '(2 4 6 4 2))
+                -1)
+   ))
+
+; Define tests for replace
+(define replace-tests
+  (test-suite
+   "replace"
+   (test-equal? "hw example 1"
+                (replace 3 5 '(1 2 3 5 4 3 2 1))
+                '(1 2 5 5 4 5 2 1))
+   (test-equal? "hw example 2"
+                (replace 3 5 '(2 4 6 8))
+                '(2 4 6 8))
+    ))
+
+; Define tests for weigh
+(define weigh-tests
+  (test-suite
+   "weigh"
+   (test-equal? "hw example"
+                (weigh bags)
+                87)
+   ))
+
+; Define tests for heaviest
+(define heaviest-tests
+  (test-suite
+   "heaviest"
+   (test-equal? "hw example"
+                (heaviest bags)
+                'steamer-trunk)
+   ))
+
+; Define tests for child-sum
+(define child-sum-tests
+  (test-suite
+   "child-sum"
+   (test-equal? "hw example 1"
+                (child-sum T8)
+                173)
+   (test-equal? "hw example 2"
+                (child-sum T6)
+                82)
+   (test-equal? "hw example 1"
+                (child-sum empty-tree)
+                0)
+   ))
+
+; Define tests for sizeof
+(define sizeof-tests
+  (test-suite
+   "sizeof"
+   (test-equal? "hw example1"
+                (sizeof T8)
+                8)
+   (test-equal? "hw example 2"
+                (sizeof T6)
+                4)
+   ))
+
+; Define tests for height
+(define height-tests
+  (test-suite
+   "height"
+   (test-equal? "hw example 1"
+                (height empty-tree)
+                -1)
+   (test-equal? "hw example 2"
+                (height T1)
+                0)
+   (test-equal? "hw example 3"
+                (height T8)
+                2)
+   ))
+
+; Define tests for preorder
+(define preorder-tests
+  (test-suite
+   "preorder"
+   (test-equal? "hw example 1"
+                (preorder T8)
+                '(16 73 50 22 10 100 5 17))
+   ))
+
+
+; Define an All Tests test suite.
+(define all-tests
+  (test-suite
+   "All tests"
+   index-tests
+   replace-tests
+   weigh-tests
+   heaviest-tests
+   child-sum-tests
+   ))
+
+(run-tests all-tests)

@@ -1,0 +1,10 @@
+#lang racket
+; Ysabella Atehortua and Eamon McKeon
+
+; Export all of our top-level definitions so that tests.rkt
+; can import them. See tests.rkt.
+(provide (all-defined-out))
+
+(define (atom? x)
+  (and (not (null? x))
+       (not (pair? x))))
